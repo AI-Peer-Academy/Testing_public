@@ -2,11 +2,13 @@ import streamlit as st
 import base64
 import os
 
+# Function to convert the PDF file (from a fixed path or URL) to base64
 def pdf_to_base64(pdf_file_path):
     with open(pdf_file_path, "rb") as pdf_file:
         pdf_data = pdf_file.read()
     return base64.b64encode(pdf_data).decode('utf-8')
 
+# Function to display the PDF using PDF.js
 def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     pdf_js_code = f"""
     <html>
@@ -26,10 +28,6 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 .nav-buttons button {{
                     margin: 0 10px;
                 }}
-                #page-info {{
-                    text-align: center;
-                    margin-top: 10px;
-                }}
             </style>
         </head>
         <body>
@@ -37,9 +35,6 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
             <div class="nav-buttons">
                 <button onclick="previousPage()">Previous</button>
                 <button onclick="nextPage()">Next</button>
-            </div>
-            <div id="page-info">
-                Page <span id="current-page">1</span> of <span id="total-pages"></span>
             </div>
 
             <script>
@@ -51,17 +46,10 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 const scale = 1.0;
 
                 const pdfViewer = document.getElementById('pdf-viewer');
-                const currentPageSpan = document.getElementById('current-page');
-                const totalPagesSpan = document.getElementById('total-pages');
-
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
                 pdfjsLib.getDocument({{data: atob(pdfData)}}).promise.then(function(pdf) {{
                     pdfDoc = pdf;
-                    totalPagesSpan.textContent = pdf.numPages;
                     renderPage(pageNum);
-                }}).catch(function(error) {{
-                    console.error("Error loading PDF:", error);
                 }});
 
                 function renderPage(num) {{
@@ -79,19 +67,14 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                         const renderContext = {{
                             canvasContext: context,
                             viewport: viewport
-                        }}; 
+                        }};
                         page.render(renderContext).promise.then(function() {{
                             pageRendering = false;
-                            currentPageSpan.textContent = num;
                             if (pageNumPending !== null) {{
                                 renderPage(pageNumPending);
                                 pageNumPending = null;
                             }}
-                        }}).catch(function(error) {{
-                            console.error("Error rendering page:", error);
                         }});
-                    }}).catch(function(error) {{
-                        console.error("Error getting page:", error);
                     }});
                 }}
 
@@ -118,12 +101,19 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
         </body>
     </html>
     """
-    st.components.v1.html(pdf_js_code, height=950)
+    # Embed the HTML/JS into Streamlit
+    st.components.v1.html(pdf_js_code, height=900)
 
+# File uploader to load the PDF
+#pdf_file_path = "__pdf/Grade08_Science_Chapter13.pdf"  # Fixed path to the PDF
+# Construct the PDF file path using os.path.join()
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 
 if os.path.exists(pdf_file_path):
+    # Convert the PDF to base64
     pdf_base64 = pdf_to_base64(pdf_file_path)
-    display_pdf_with_pdfjs(pdf_base64, initial_page=3)
+
+    # Display the PDF with an initial page
+    display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
 else:
     st.error(f"PDF file not found at {pdf_file_path}")
