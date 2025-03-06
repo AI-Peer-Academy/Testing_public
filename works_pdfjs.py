@@ -1,6 +1,6 @@
-#20250306_2320 works
 import streamlit as st
 import base64
+import os
 
 # Function to convert the PDF file (from a fixed path or URL) to base64
 def pdf_to_base64(pdf_file_path):
@@ -105,17 +105,15 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     st.components.v1.html(pdf_js_code, height=900)
 
 # File uploader to load the PDF
-pdf_file = st.file_uploader("Upload PDF", type="pdf")
-if pdf_file:
-    # Save the uploaded file temporarily
-    pdf_path = f"__pdf/{pdf_file.name}"
-    with open(pdf_path, "wb") as f:
-        f.write(pdf_file.getbuffer())
+#pdf_file_path = "__pdf/Grade08_Science_Chapter13.pdf"  # Fixed path to the PDF
+# Construct the PDF file path using os.path.join()
+pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 
+if os.path.exists(pdf_file_path):
     # Convert the PDF to base64
-    pdf_base64 = pdf_to_base64(pdf_path)
+    pdf_base64 = pdf_to_base64(pdf_file_path)
 
     # Display the PDF with an initial page
     display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
 else:
-    st.warning("Please upload a PDF file.")
+    st.error(f"PDF file not found at {pdf_file_path}")
