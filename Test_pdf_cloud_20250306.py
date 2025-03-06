@@ -28,6 +28,10 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 .nav-buttons button {{
                     margin: 0 10px;
                 }}
+                #page-info {{
+                    text-align: center;
+                    margin-top: 10px;
+                }}
             </style>
         </head>
         <body>
@@ -36,6 +40,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 <button onclick="previousPage()">Previous</button>
                 <button onclick="nextPage()">Next</button>
             </div>
+            <div id="page-info">Page <span id="current-page"></span> of <span id="total-pages"></span></div>
 
             <script>
                 const pdfData = "{pdf_base64}";
@@ -46,9 +51,12 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 const scale = 1.0;
 
                 const pdfViewer = document.getElementById('pdf-viewer');
+                const currentPageSpan = document.getElementById('current-page');
+                const totalPagesSpan = document.getElementById('total-pages');
 
                 pdfjsLib.getDocument({{data: atob(pdfData)}}).promise.then(function(pdf) {{
                     pdfDoc = pdf;
+                    totalPagesSpan.textContent = pdf.numPages;
                     renderPage(pageNum);
                 }});
 
@@ -70,6 +78,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                         }};
                         page.render(renderContext).promise.then(function() {{
                             pageRendering = false;
+                            currentPageSpan.textContent = num;
                             if (pageNumPending !== null) {{
                                 renderPage(pageNumPending);
                                 pageNumPending = null;
@@ -102,10 +111,8 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     </html>
     """
     # Embed the HTML/JS into Streamlit
-    st.components.v1.html(pdf_js_code, height=900)
+    st.components.v1.html(pdf_js_code, height=950) # increased height
 
-# File uploader to load the PDF
-#pdf_file_path = "__pdf/Grade08_Science_Chapter13.pdf"  # Fixed path to the PDF
 # Construct the PDF file path using os.path.join()
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 
