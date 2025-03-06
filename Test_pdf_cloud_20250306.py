@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_pdf_viewer import pdf_viewer
-import gdown
+#import gdown
 import os
 import base64
 
