@@ -75,7 +75,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                             }}
                         }});
                     }});
-                }
+                }}
 
                 function queueRenderPage(num) {{
                     if (pageRendering) {{
