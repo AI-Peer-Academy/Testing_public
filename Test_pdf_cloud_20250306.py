@@ -4,30 +4,22 @@ from PIL import Image
 import io
 import os
 
-# Google Drive PDF URL
+import streamlit as st
+
+# Google Drive file link
 file_id = "1CMU4xK3u_wAGD0Ev_YsV-shC88ujXi83"
-pdf_url = f"https://drive.google.com/file/d/{file_id}/preview"
+pdf_url = f"https://drive.google.com/file/d/{file_id}/view"
 
-# Set default page number to 3
-if "page_number" not in st.session_state:
-    st.session_state.page_number = 3  # Default to page 3
+# Set default page number
+default_page = 3
+page_number = st.number_input("Go to page:", min_value=1, value=default_page, step=1)
 
-# Allow user to change the page
-page_number = st.number_input("Go to page:", min_value=1, value=st.session_state.page_number, step=1)
+# Generate the correct URL
+pdf_page_url = f"{pdf_url}#page={page_number}"
 
-# Embed PDF using HTML & JavaScript for automatic page navigation
-pdf_embed_code = f"""
-    <script>
-        function loadPDF() {{
-            var iframe = document.getElementById("pdf_frame");
-            iframe.src = "{pdf_url}#page={page_number}";
-        }}
-        window.onload = loadPDF;
-    </script>
-    <iframe id="pdf_frame" src="{pdf_url}#page={page_number}" width="800" height="600"></iframe>
-"""
+# Open in a new tab
+st.markdown(f"[Open PDF (Page {page_number})]({pdf_page_url})", unsafe_allow_html=True)
 
-st.components.v1.html(pdf_embed_code, height=650)
 
 def open_pdfViewer_as_image(pdf_file, page_number=2):
     try:
