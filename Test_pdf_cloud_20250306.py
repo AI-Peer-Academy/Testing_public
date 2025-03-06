@@ -2,13 +2,11 @@ import streamlit as st
 import base64
 import os
 
-# Function to convert the PDF file (from a fixed path or URL) to base64
 def pdf_to_base64(pdf_file_path):
     with open(pdf_file_path, "rb") as pdf_file:
         pdf_data = pdf_file.read()
     return base64.b64encode(pdf_data).decode('utf-8')
 
-# Function to display the PDF using PDF.js
 def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     pdf_js_code = f"""
     <html>
@@ -54,11 +52,12 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 const currentPageSpan = document.getElementById('current-page');
                 const totalPagesSpan = document.getElementById('total-pages');
 
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
                 pdfjsLib.getDocument({{data: atob(pdfData)}}).promise.then(function(pdf) {{
                     pdfDoc = pdf;
                     totalPagesSpan.textContent = pdf.numPages;
                     renderPage(pageNum);
-                    currentPageSpan.textContent = pageNum; //Added to display initial page number
                 }});
 
                 function renderPage(num) {{
@@ -111,17 +110,12 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
         </body>
     </html>
     """
-    # Embed the HTML/JS into Streamlit
     st.components.v1.html(pdf_js_code, height=950)
 
-# Construct the PDF file path using os.path.join()
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 
 if os.path.exists(pdf_file_path):
-    # Convert the PDF to base64
     pdf_base64 = pdf_to_base64(pdf_file_path)
-
-    # Display the PDF with an initial page
     display_pdf_with_pdfjs(pdf_base64, initial_page=3)
 else:
     st.error(f"PDF file not found at {pdf_file_path}")
