@@ -6,70 +6,120 @@ import os
 import base64
 
 import streamlit as st
-import fitz  # PyMuPDF
-from PIL import Image
-import os
+import base64
 
-# Ensure session state is initialized for page tracking
-if "page_number" not in st.session_state:
-    st.session_state.page_number = 3
+# Function to convert the PDF file (from a fixed path or URL) to base64
+def pdf_to_base64(pdf_file_path):
+    with open(pdf_file_path, "rb") as pdf_file:
+        pdf_data = pdf_file.read()
+    return base64.b64encode(pdf_data).decode('utf-8')
 
-# Function to render PDF page as an image
-def open_pdfViewer_as_image(pdf_file, page_number=2):
-    try:
-        pdf_folder = "__pdf"
-        pdf_path = os.path.join(pdf_folder, pdf_file)
+# Function to display the PDF using PDF.js
+def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
+    pdf_js_code = f"""
+    <html>
+        <head>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+            <style>
+                #pdf-viewer {{
+                    width: 100%;
+                    height: 800px;
+                    overflow: auto;
+                }}
+                .nav-buttons {{
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 10px;
+                }}
+                .nav-buttons button {{
+                    margin: 0 10px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div id="pdf-viewer"></div>
+            <div class="nav-buttons">
+                <button onclick="previousPage()">Previous</button>
+                <button onclick="nextPage()">Next</button>
+            </div>
 
-        # Check if the PDF file exists
-        if not os.path.exists(pdf_path):
-            st.error("PDF file not found.")
-            return
+            <script>
+                const pdfData = "{pdf_base64}";
+                let pdfDoc = null;
+                let pageNum = {initial_page};
+                let pageRendering = false;
+                let pageNumPending = null;
+                const scale = 1.0;
 
-        # Open the PDF
-        doc = fitz.open(pdf_path)
-        total_pages = len(doc)
+                const pdfViewer = document.getElementById('pdf-viewer');
 
-        # Validate page number
-        if page_number < 1 or page_number > total_pages:
-            st.error("Invalid page number.")
-            return
+                pdfjsLib.getDocument({{data: atob(pdfData)}}).promise.then(function(pdf) {{
+                    pdfDoc = pdf;
+                    renderPage(pageNum);
+                }});
 
-        # Render the selected page as an image
-        page = doc[page_number - 1]
-        pix = page.get_pixmap()
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                function renderPage(num) {{
+                    pageRendering = true;
+                    pdfDoc.getPage(num).then(function(page) {{
+                        const viewport = page.getViewport({{scale: scale}});
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
 
-        # Display the image in Streamlit
-        st.image(img, caption=f"Page {page_number} of {total_pages}", use_column_width=True)
+                        pdfViewer.innerHTML = '';
+                        pdfViewer.appendChild(canvas);
 
-        # Page navigation buttons
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            if st.button("⬅️ Previous", key="prev"):
-                st.session_state.page_number = max(1, st.session_state.page_number - 1)
-        with col2:
-            if st.button("Next ➡️", key="next"):
-                st.session_state.page_number = min(total_pages, st.session_state.page_number + 1)
+                        const renderContext = {{
+                            canvasContext: context,
+                            viewport: viewport
+                        }};
+                        page.render(renderContext).promise.then(function() {{
+                            pageRendering = false;
+                            if (pageNumPending !== null) {{
+                                renderPage(pageNumPending);
+                                pageNumPending = null;
+                            }}
+                        }});
+                    }});
+                }
 
-    except Exception as e:
-        st.error(f"Error displaying PDF page: {e}")
+                function queueRenderPage(num) {{
+                    if (pageRendering) {{
+                        pageNumPending = num;
+                    }} else {{
+                        renderPage(num);
+                    }}
+                }}
 
-# Upload PDF file for testing
-uploaded_pdf = st.file_uploader("Upload a PDF", type="pdf")
+                function nextPage() {{
+                    if (pageNum >= pdfDoc.numPages) return;
+                    pageNum++;
+                    queueRenderPage(pageNum);
+                }}
 
-if uploaded_pdf is not None:
-    # Save the uploaded PDF to the __pdf folder
-    pdf_folder = "__pdf"
-    if not os.path.exists(pdf_folder):
-        os.makedirs(pdf_folder)
+                function previousPage() {{
+                    if (pageNum <= 1) return;
+                    pageNum--;
+                    queueRenderPage(pageNum);
+                }}
+            </script>
+        </body>
+    </html>
+    """
+    # Embed the HTML/JS into Streamlit
+    st.components.v1.html(pdf_js_code, height=900)
 
-    # Save the uploaded PDF file
-    with open(os.path.join(pdf_folder, uploaded_pdf.name), "wb") as f:
-        f.write(uploaded_pdf.getbuffer())
+# Specify a fixed PDF file path or URL
+#pdf_file_path = "path/to/your/fixed/pdf_file.pdf"  # Replace with the correct path to your file
+pdf_folder = "__pdf"
+pdf_path = os.path.join(pdf_folder, pdf_file)
 
-    # Open the uploaded PDF using the saved file and current page from session state
-    open_pdfViewer_as_image(uploaded_pdf.name, st.session_state.page_number)
+# Convert the PDF to base64
+pdf_base64 = pdf_to_base64(pdf_file_path)
 
+# Display the PDF with an initial page of your choice
+display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # You can set any starting page number
 
 
 def gdrive_pdf():
