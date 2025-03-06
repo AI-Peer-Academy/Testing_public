@@ -5,7 +5,7 @@ import os
 
 # Ensure session state is initialized for page tracking
 if "page_number" not in st.session_state:
-    st.session_state.page_number = 1
+    st.session_state.page_number = 3
 
 # Function to render PDF page as an image
 def open_pdfViewer_as_image(pdf_file, page_number=2):
