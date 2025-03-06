@@ -11,7 +11,7 @@ file_id = "1CMU4xK3u_wAGD0Ev_YsV-shC88ujXi83"
 pdf_url = f"https://drive.google.com/file/d/{file_id}/preview"
 
 # Page number input
-page_number = st.number_input("Go to page:", min_value=1, value=1, step=1)
+page_number = st.number_input("Go to page:", min_value=1, value=3, step=1)
 
 # Display PDF with page number support
 st.components.v1.iframe(f"{pdf_url}#page={page_number}", width=800, height=600)
