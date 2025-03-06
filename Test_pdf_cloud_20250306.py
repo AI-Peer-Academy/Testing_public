@@ -21,7 +21,8 @@ def display_pdf_with_page(pdf_file, page_num):
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 # Example usage:
-pdf_file_path = "__pdf\Grade08_Science_Chapter13.pdf"  # Replace with your PDF file path
+#pdf_file_path = "__pdf\Grade08_Science_Chapter13.pdf"  # Replace with your PDF file path
+pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 page_to_open = 2  # Specify the page number you want to open
 
 try:
