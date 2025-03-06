@@ -1,6 +1,5 @@
 import streamlit as st
 
-# Function to display the PDF using PDF.js with page navigation
 def display_pdf_with_pdfjs(pdf_url):
     pdf_js_code = f"""
     <!DOCTYPE html>
@@ -93,8 +92,5 @@ def display_pdf_with_pdfjs(pdf_url):
     """
     st.components.v1.html(pdf_js_code, height=700)
 
-# Google Drive URL of the PDF
-pdf_url = "https://drive.google.com/uc?id=1CMU4xK3u_wAGD0Ev_YsV-shC88ujXi83"  # Replace with your Google Drive URL
-
-# Display the PDF viewer
+pdf_url = "https://drive.google.com/uc?id=1CMU4xK3u_wAGD0Ev_YsV-shC88ujXi83"  # Replace with your Google Drive PDF URL
 display_pdf_with_pdfjs(pdf_url)
