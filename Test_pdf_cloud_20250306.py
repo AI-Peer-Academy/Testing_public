@@ -58,6 +58,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                     pdfDoc = pdf;
                     totalPagesSpan.textContent = pdf.numPages;
                     renderPage(pageNum);
+                    currentPageSpan.textContent = pageNum; //Added to display initial page number
                 }});
 
                 function renderPage(num) {{
@@ -111,7 +112,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     </html>
     """
     # Embed the HTML/JS into Streamlit
-    st.components.v1.html(pdf_js_code, height=950) # increased height
+    st.components.v1.html(pdf_js_code, height=950)
 
 # Construct the PDF file path using os.path.join()
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
@@ -121,6 +122,6 @@ if os.path.exists(pdf_file_path):
     pdf_base64 = pdf_to_base64(pdf_file_path)
 
     # Display the PDF with an initial page
-    display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
+    display_pdf_with_pdfjs(pdf_base64, initial_page=3)
 else:
     st.error(f"PDF file not found at {pdf_file_path}")
