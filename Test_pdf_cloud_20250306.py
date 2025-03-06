@@ -4,21 +4,20 @@ from PIL import Image
 import io
 import os
 
-import streamlit as st
 
-# Google Drive file link
+# Google Drive file ID
 file_id = "1CMU4xK3u_wAGD0Ev_YsV-shC88ujXi83"
-pdf_url = f"https://drive.google.com/file/d/{file_id}/view"
 
 # Set default page number
-default_page = 3
+default_page = 5
 page_number = st.number_input("Go to page:", min_value=1, value=default_page, step=1)
 
-# Generate the correct URL
-pdf_page_url = f"{pdf_url}#page={page_number}"
+# Use Google Docs Viewer instead of Google Drive
+pdf_viewer_url = f"https://docs.google.com/gview?url=https://drive.google.com/uc?id={file_id}&embedded=true#page={page_number}"
 
 # Open in a new tab
-st.markdown(f"[Open PDF (Page {page_number})]({pdf_page_url})", unsafe_allow_html=True)
+st.markdown(f"[Open PDF (Page {page_number})]({pdf_viewer_url})", unsafe_allow_html=True)
+
 
 
 def open_pdfViewer_as_image(pdf_file, page_number=2):
