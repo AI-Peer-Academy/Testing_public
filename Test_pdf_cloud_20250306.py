@@ -38,7 +38,9 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                 <button onclick="previousPage()">Previous</button>
                 <button onclick="nextPage()">Next</button>
             </div>
-            <div id="page-info">Page <span id="current-page"></span> of <span id="total-pages"></span></div>
+            <div id="page-info">
+                Page <span id="current-page">1</span> of <span id="total-pages"></span>
+            </div>
 
             <script>
                 const pdfData = "{pdf_base64}";
@@ -58,6 +60,8 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                     pdfDoc = pdf;
                     totalPagesSpan.textContent = pdf.numPages;
                     renderPage(pageNum);
+                }}).catch(function(error) {{
+                    console.error("Error loading PDF:", error);
                 }});
 
                 function renderPage(num) {{
@@ -75,7 +79,7 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                         const renderContext = {{
                             canvasContext: context,
                             viewport: viewport
-                        }};
+                        }}; 
                         page.render(renderContext).promise.then(function() {{
                             pageRendering = false;
                             currentPageSpan.textContent = num;
@@ -83,7 +87,11 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
                                 renderPage(pageNumPending);
                                 pageNumPending = null;
                             }}
+                        }}).catch(function(error) {{
+                            console.error("Error rendering page:", error);
                         }});
+                    }}).catch(function(error) {{
+                        console.error("Error getting page:", error);
                     }});
                 }}
 
