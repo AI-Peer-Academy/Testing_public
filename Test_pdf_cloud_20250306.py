@@ -16,7 +16,8 @@ def display_pdf_with_page(pdf_file, page_num):
     with open(pdf_file, "rb") as f:
         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
 
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}#page={page_num}" width="800" height="800" type="application/pdf"></iframe>'
+    #pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}#page={page_num}" width="800" height="800" type="application/pdf"></iframe>'
+    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="800" height="800" type="application/pdf"></iframe>'
 
     st.markdown(pdf_display, unsafe_allow_html=True)
 
