@@ -4,9 +4,9 @@ import os
 
 # Function to convert the PDF file (from a fixed path or URL) to base64
 def pdf_to_base64(pdf_file_path):
-    with open(pdf_file_path, "rb") as pdf_file:
-        pdf_data = pdf_file.read()
-    return base64.b64encode(pdf_data).decode('utf-8')
+  with open(pdf_file_path, "rb") as pdf_file:
+      pdf_data = pdf_file.read()
+  return base64.b64encode(pdf_data).decode('utf-8')
 
 # Function to display the PDF using PDF.js
 def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
