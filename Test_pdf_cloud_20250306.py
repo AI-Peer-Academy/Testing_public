@@ -1,19 +1,29 @@
 #20250307 1000 works. 
 #pdf.js
 #prev/next, pagenumber show, goto page numer.
+#total page numbers not available.
 
 import streamlit as st
 import base64
 import os
 
-# Function to convert the PDF file (from a fixed path or URL) to base64
-def pdf_to_base64(pdf_file_path):
-    with open(pdf_file_path, "rb") as pdf_file:
-        pdf_data = pdf_file.read()
-    return base64.b64encode(pdf_data).decode('utf-8')
-
 # Function to display the PDF using PDF.js
-def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
+def display_pdf_with_pdfjs(pdf_file_path, initial_page=3):
+    
+    # Function to convert the PDF file (from a fixed path or URL) to base64
+    def pdf_to_base64(pdf_file_path):
+        with open(pdf_file_path, "rb") as pdf_file:
+            pdf_data = pdf_file.read()
+        return base64.b64encode(pdf_data).decode('utf-8')
+
+    if os.path.exists(pdf_file_path):
+        # Convert the PDF to base64
+        pdf_base64 = pdf_to_base64(pdf_file_path)
+
+    else:
+        st.error(f"PDF file not found at {pdf_file_path}")
+        return
+    
     pdf_js_code = f"""
     <html>
     <head>
@@ -151,16 +161,8 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     # Embed the HTML/JS into Streamlit
     st.components.v1.html(pdf_js_code, height=950) # Increased height to accommodate new elements
 
-# File uploader to load the PDF
-#pdf_file_path = "__pdf/Grade08_Science_Chapter13.pdf"  # Fixed path to the PDF
-# Construct the PDF file path using os.path.join()
+
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
+# Display the PDF with an initial page
+display_pdf_with_pdfjs(pdf_file_path, initial_page=3)  # Set the starting page as needed
 
-if os.path.exists(pdf_file_path):
-    # Convert the PDF to base64
-    pdf_base64 = pdf_to_base64(pdf_file_path)
-
-    # Display the PDF with an initial page
-    display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
-else:
-    st.error(f"PDF file not found at {pdf_file_path}")
