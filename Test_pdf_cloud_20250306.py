@@ -155,10 +155,10 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
 pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
 
 if os.path.exists(pdf_file_path):
-    # Convert the PDF to base64
-    pdf_base64 = pdf_to_base64(pdf_file_path)
-
-    # Display the PDF with an initial page
-    display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
-else:
-    st.error(f"PDF file not found at {pdf_file_path}")
+  # Convert the PDF to base64
+  pdf_base64 = pdf_to_base64(pdf_file_path)
+  
+  # Display the PDF with an initial page
+  display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
+  else:
+  st.error(f"PDF file not found at {pdf_file_path}")
