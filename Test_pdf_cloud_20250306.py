@@ -160,5 +160,5 @@ if os.path.exists(pdf_file_path):
   
   # Display the PDF with an initial page
   display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
-  else:
+else:
   st.error(f"PDF file not found at {pdf_file_path}")
