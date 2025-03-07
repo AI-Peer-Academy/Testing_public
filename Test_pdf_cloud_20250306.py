@@ -1,6 +1,17 @@
+import streamlit as st
+import base64
+import os
+
+# Function to convert the PDF file (from a fixed path or URL) to base64
+def pdf_to_base64(pdf_file_path):
+    with open(pdf_file_path, "rb") as pdf_file:
+        pdf_data = pdf_file.read()
+    return base64.b64encode(pdf_data).decode('utf-8')
+
 # Function to display the PDF using PDF.js
 def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
-  pdf_js_code = f"""    <html>
+    pdf_js_code = f"""
+    <html>
     <head>
         <head>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -64,11 +75,9 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
 
             pdfjsLib.getDocument({{data: atob(pdfData)}}).promise.then(function(pdf) {{
                 pdfDoc = pdf;
-                console.log("pdfDoc object:", pdfDoc); // LOG 1: Check pdfDoc
-                console.log("pdfDoc.numPages:", pdfDoc.numPages); // LOG 2: Check numPages
-                totalPagesSpan.textContent = pdfDoc.numPages; // Display total pages
-                console.log("totalPagesSpan:", totalPagesSpan); // LOG 3: Check totalPagesSpan element
-                console.log("totalPagesSpan.textContent after assignment:", totalPagesSpan.textContent); // LOG 4: Check textContent after assignment
+                setTimeout(function() {{ // Added setTimeout for total pages
+                    totalPagesSpan.textContent = pdfDoc.numPages; // Display total pages
+                }}, 100);
                 pageNumberInput.max = pdfDoc.numPages;       // Set max for input
                 renderPage(pageNum);
             }});
@@ -137,5 +146,19 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     </body>
     </html>
     """
-# Embed the HTML/JS into Streamlit
-st.components.v1.html(pdf_js_code, height=950) # Increased height to accommodate new elements
+    # Embed the HTML/JS into Streamlit
+    st.components.v1.html(pdf_js_code, height=950) # Increased height to accommodate new elements
+
+# File uploader to load the PDF
+#pdf_file_path = "__pdf/Grade08_Science_Chapter13.pdf"  # Fixed path to the PDF
+# Construct the PDF file path using os.path.join()
+pdf_file_path = os.path.join("__pdf", "Grade08_Science_Chapter13.pdf")
+
+if os.path.exists(pdf_file_path):
+    # Convert the PDF to base64
+    pdf_base64 = pdf_to_base64(pdf_file_path)
+
+    # Display the PDF with an initial page
+    display_pdf_with_pdfjs(pdf_base64, initial_page=3)  # Set the starting page as needed
+else:
+    st.error(f"PDF file not found at {pdf_file_path}")
