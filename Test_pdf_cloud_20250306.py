@@ -1,7 +1,7 @@
 # Function to display the PDF using PDF.js
 def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     pdf_js_code = f"""
-    <html>
+    <html>
     <head>
         <head>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
