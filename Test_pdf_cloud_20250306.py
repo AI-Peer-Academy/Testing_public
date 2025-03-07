@@ -137,5 +137,5 @@ def display_pdf_with_pdfjs(pdf_base64, initial_page=1):
     </body>
     </html>
     """
-  # Embed the HTML/JS into Streamlit
-  st.components.v1.html(pdf_js_code, height=950) # Increased height to accommodate new elements
+# Embed the HTML/JS into Streamlit
+st.components.v1.html(pdf_js_code, height=950) # Increased height to accommodate new elements
